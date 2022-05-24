@@ -214,6 +214,7 @@ while True:
   if currentRoom == "Pantry":
       pokemon_encounter = ""
       pokemon_encounter = random.choice(ghost_pokemon)
+      e1 = Enemy(pokemon_encounter)
       random_combat_encounter(e1, p1)  
 
   if currentRoom == "Hall":
