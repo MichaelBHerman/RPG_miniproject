@@ -44,18 +44,17 @@ rooms = {
             'Hall' : {
                   'south' : 'Kitchen',
                   'east'  : 'Dining Room',
-                #   'west'  : 'Music Studio',
-                  'item'  : 'key'
-                },
+                 
+                }, 
 
             'Kitchen' : {
                   'north' : 'Hall',
-                  'item'  : 'monster',
+                   'item'  : 'key',
                 },
             'Dining Room' : {
                   'west' : 'Hall',
                   'south': 'Garden',
-                  'item' : 'potion',
+                  
                   'north' : 'Pantry',
                },
             'Garden' : {
@@ -63,7 +62,7 @@ rooms = {
                },
             'Pantry' : {
                   'south' : 'Dining Room',
-                  'item' : 'cookie',
+                  'item' : 'master ball',
             }
          }
 
@@ -75,15 +74,18 @@ class Player:
     def __init__(self):
         self.name = "Snorlax"
         self.hp = 100
-    def sleep(self, enemy):
+    def claw(self, enemy):
         print("------------------------------")
-        print("\nSnorlax is fast asleep! Zzz....Zzz...Zzz") 
-        enemy.hp -= 40
+        print("\nSnorlax used Claw!") 
+        random_damage = random.randint(10, 100)
+        enemy.hp - random_damage
+        print("\nThe " + enemy.name + " lost " + str(enemy.hp))
+        
 
     def bite(self, enemy):
         print("------------------------------")
         print("\nSnorlax used Bite!")
-        print("\nThe " + enemy.name + " lost 20 hp.")
+        print("\n" + enemy.name + " lost 35 hp. ")
         enemy.hp -= 35
 
 class Enemy:
@@ -97,45 +99,45 @@ class Enemy:
         print("\n" + player.name + " lost 20 hp. ")
         player.hp -= 20
 
-ghost_pokemon = ["Ghastly","x", "Haunter", "Spiritomb", "Mimikyu", "Polteageist"]
-##spice this list up to include a legendary pokemon encounter...making the list extra long with copies to reduce chance of encounter with legendary?
+ghost_pokemon = ["Ghastly", "Haunter", "Spiritomb", "Mimikyu", "Polteageist"]
+
 pokemon_encounter = random.choice(ghost_pokemon)
-print(pokemon_encounter)
- #debuggin purposes
+
 p1 = Player()
 e1 = Enemy(pokemon_encounter)
 
-
-
-
 def random_combat_encounter(enemy, player):
-    pokemon_encounter = random.choice(ghost_pokemon)
+    # pokemon_encounter = random.choice(ghost_pokemon)
     
-    if pokemon_encounter != "x":
+    if pokemon_encounter != "":
+        enemy.hp = 40
         combat = True
         print("A wild " + pokemon_encounter + " appreared!\n")
+
         while combat == True:
         
-            move = int(input("Select a move. [1] Bite, [2] Sleep\n>>>"))
+            move = int(input("Select a move. [1] Bite, [2] Claw\n>>>"))
             if move == 1:
                 player.bite(enemy)
                 print(enemy.name + "'s HP: " +str(enemy.hp))
             else:
-                player.sleep(enemy) 
-            ##make this a separate check_win function
+                player.claw(enemy) 
+                print(enemy.name + "'s HP: " +str(enemy.hp))
             if enemy.hp <= 0:
                 print("\nThe wild " + enemy.name + " fainted!\n") 
-                ghost_pokemon.remove(pokemon_encounter)
+                # ghost_pokemon.remove(pokemon_encounter)
+                # print(ghost_pokemon)
                 combat = False  
             else: 
                 enemy.dark_pulse(player, pokemon_encounter) 
                 print(player.name + "'s HP: " +str(player.hp))
             ##checkwin()
+                if player.hp <= 0:
+                    print("Snorlax fainted!  Game over.") 
+                    sys.exit() 
                 continue
             ##continue should loop back to the begnining of the combat while loop
-            if player.hp <= 0:
-                print("Snorlax fainted!  Game over.") 
-                sys.exit()     
+                
     else: 
         print("After looking around, the coast is clear.")
 
@@ -185,31 +187,46 @@ while True:
       print('Can\'t get ' + move[1] + '!')
       
   ## Define how a player can win
-  if currentRoom == 'Garden' and 'key' in inventory and 'potion' in inventory:
-    print('You escaped the house with the ultra rare key and magic potion... YOU WIN!')
-    ##enter kanye rest api here for parting wisdom quotes
-    break
+  if currentRoom == 'Garden' and 'key' in inventory and 'master ball' in inventory:
+    print("------------------------------")
+    print("You are in the Garden\n")
+    print('\nA wild Necrozma appeared!')
+    choice = int(input("Use master ball? [1] yes [2] no\n>>>"))
+    if choice == 1:
+        print("\nYou captured Necrozma with the master ball! You used the key and exited through the garden gate.  You WIN!")
+        sys.exit()
+  elif currentRoom == 'Garden' and 'key' not in inventory and 'master ball' not in inventory:
+    print("You are in the Garden.\n")
+    print("\nA wild Necrozma Appeared!")
+    print("\nNecrozma used Prismatic Laser") 
+    print("\nSnorlax fainted.  You LOSE!")   
+    sys.exit()
+    
+   
 
-  ## If a player enters a room with a monster
-  elif 'item' in rooms[currentRoom] and 'monster' in rooms[currentRoom]['item']:
-    print('A monster has got you... GAME OVER!')
-    break
-#   if currentRoom == "Kitchen":
-#     #   random_combat_encounter(e1, p1)
-
-  if currentRoom == "Pantry":
-      random_combat_encounter(e1, p1)  
-
-  if currentRoom == "Garden":
-      random_combat_encounter(e1, p1)  
-  if currentRoom == "Dining room":
-      random_combat_encounter(e1, p1)      
-
-  if currentRoom == "Music Studio":
+  if currentRoom == "Kitchen":
       print("Kanye West appears and offers you some wisdom: \n") 
       response = requests.get("https://api.kanye.rest")
       wisdom = response.json()
       print("Kanye says: " + wisdom["quote"])
       print("\nWTH......okay?  Moving on...")
+
+  if currentRoom == "Pantry":
+      pokemon_encounter = ""
+      pokemon_encounter = random.choice(ghost_pokemon)
+      random_combat_encounter(e1, p1)  
+
+  if currentRoom == "Hall":
+      random_combat_encounter(e1, p1)    
+ 
+  if currentRoom == "Dining room":
+      random_combat_encounter(e1, p1)      
+
+#   if currentRoom == "Music Studio":
+#       print("Kanye West appears and offers you some wisdom: \n") 
+#       response = requests.get("https://api.kanye.rest")
+#       wisdom = response.json()
+#       print("Kanye says: " + wisdom["quote"])
+#       print("\nWTH......okay?  Moving on...")
      
 
