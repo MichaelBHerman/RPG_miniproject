@@ -68,18 +68,22 @@ rooms = {
 
 #start the player in the Hall
 currentRoom = 'Hall'
+#a counter for encounters with Kanye West, so that you can only encounter him once
+first_encounter = 0
 
 ## class for player(Snorlax) and enemy(ghost pokemon)
 class Player:
     def __init__(self):
         self.name = "Snorlax"
         self.hp = 100
+
     def claw(self, enemy):
         print("------------------------------")
         print("\nSnorlax used Claw!") 
         random_damage = random.randint(10, 100)
-        enemy.hp - random_damage
-        print("\nThe " + enemy.name + " lost " + str(enemy.hp))
+        print(random_damage)
+        enemy.hp -= random_damage
+        print("\nThe " + enemy.name + " lost " + str(enemy.hp) + " hp.")
         
 
     def bite(self, enemy):
@@ -107,7 +111,7 @@ p1 = Player()
 e1 = Enemy(pokemon_encounter)
 
 def random_combat_encounter(enemy, player):
-    # pokemon_encounter = random.choice(ghost_pokemon)
+    
     
     if pokemon_encounter != "":
         enemy.hp = 40
@@ -205,11 +209,15 @@ while True:
    
 
   if currentRoom == "Kitchen":
-      print("Kanye West appears and offers you some wisdom: \n") 
-      response = requests.get("https://api.kanye.rest")
-      wisdom = response.json()
-      print("Kanye says: " + wisdom["quote"])
-      print("\nWTH......okay?  Moving on...")
+      
+      while first_encounter == 0:
+
+        print("Kanye West appears and offers you some wisdom: \n") 
+        response = requests.get("https://api.kanye.rest")
+        wisdom = response.json()
+        print("Kanye says: " + wisdom["quote"])
+        print("\nWTH......okay?  Moving on...")
+        first_encounter += 1
 
   if currentRoom == "Pantry":
       pokemon_encounter = ""
